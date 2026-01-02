@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <!-- jquery link -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+  <style>
+    body {
+      background: aliceblue;
+    }
+    .team-img {
+    height: 180px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .team-card {
+    height: 100%;
+  }
+  </style>
+
+  <script>
+    $(document).ready(function () {
+
+
+      $("#sgnup").click(function () {
+
+
+        let email = $("#txtEmail").val();
+        let pwd = $("#pwd").val();
+
+        
+        var emailPattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+        var passwordPattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/;
+
+        
+        if (!emailPattern.test(email)) {
+          alert("Please enter a valid email address.");
+          return;
+        }
+
+        if (!passwordPattern.test(pwd)) {
+          alert("Please enter a strong password.");
+          return;
+        }
+
+        let obj = {
+          type: "get",
+          url: "/signup-process",
+          data: {
+            txtEmail: email,
+            pwd: pwd,
+            combo: $("#combo").val()
+          }
+        };
+
+        $.ajax(obj).done(function (resp) {
+          $("#msgSignup").html(resp);
+          
+        }).fail(function (err) {
+          alert(err.statusText);
+
+        });
+
+        
+      });
+
+
+      $("#login").click(function () {
+
+        let obj = {
+          type: "get",
+          url: "/login-process",
+          data: {
+            txtEmaill: $("#txtEmaill").val(),
+            txtPwd: $("#txtPwd").val(),
+
+          }
+        }
+        $.ajax(obj).done(function (resp) {
+          // alert(resp);
+
+          if (resp === "Influencer") {
+            location.href = "infl-dash.html";
+            localStorage.setItem("activeuser", $("#txtEmaill").val());
+          }
+
+          else if (resp === "Client") {
+            location.href = "client-dash.html";
+            localStorage.setItem("activeuser", $("#txtEmaill").val());
+          }
+          else
+            alert(resp);
+
+          $("#msgLogin").html(resp);
+
+
+        }).fail(function (err) {
+          alert(err.statusText);
+        })
+
+      })
+
+
+    })
+
+
+  </script>
+  <script>
+    function doLogout() {
+      localStorage.removeItem("activeuser");
+      location.href = "index.html";
+    }
+  </script>
+</head>
+
+<body style="background-color: aliceblue;">
+
+  <nav style="background-color: aliceblue;" class="navbar navbar-expand-lg navbar-light   fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="pics/pikaso_embed.png" height="40" width="40" alt=""> <b
+          style="color: blue;">Connexia</b></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="me-auto"></div>
+        <div class="d-flex">
+          <button class="btn btn-outline-primary me-2" type="button" data-bs-toggle="modal"
+            data-bs-target="#signupModal"><b>Signup</b></button>
+          <button class="btn btn-outline-primary me-2" type="button" data-bs-toggle="modal"
+            data-bs-target="#loginModal"><b>Login</b></button>
+          <!--  <a href="\infl-dash" class="btn btn-primary me-2"><b>Influencer</b></a>
+          <a href="\admin-dash" class="btn btn-primary me-2"><b>Admin</b></a>
+          <a href="\client-dash" class="btn btn-primary me-2"><b>Client</b></a> -->
+          <a href="#ourservices" class="btn btn-outline-primary me-2"><b>Our Services</b></a>
+          <a href="#ourteam" class="btn btn-outline-primary me-2"><b>Our Team</b></a>
+          <a href="#reachus" class="btn btn-outline-primary me-2"><b>Reach Us</b></a>
+          <button class="btn btn-outline-primary me-2" type="button" id="logout"
+            onclick="doLogout();"><b>Logout</b></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <br>
+  <div id="carouselExampleAutoplaying" class="carousel slide pointer-event" data-bs-ride="carousel">
+    <br><br>
+    <div class="carousel-inner">
+      <div class="carousel-item active" data-bs-interval="1000">
+        <img src="pics/Add a little bit of body text.png" class="d-block w-100 img-fluid" alt="...">
+      </div>
+      <div class="carousel-item" data-bs-interval="1000">
+        <img src="pics/addnew.png" class="d-block w-100 img-fluid" alt="...">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
+      data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying"
+      data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+  <br>
+  <br id="ourservices">
+  <center>
+    <h3>Our Services</h3>
+  </center>
+  <br><br>
+  <div class="row">
+    <div class="col-md-10  offset-md-1">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/collab.avif" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">Collaborations</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/promotions.avif" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">Promotions</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/find_infl_paint.jpg" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">Find Influencer</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/meeeeet.avif" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title" id="ourteam">Meet & Greet</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <br>
+  <center>
+    <h3>Our Team</h3>
+  </center>
+  <br>
+  <br>
+  <div class="row">
+    <div class="col-md-10 offset-md-1">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="pics/vibhanshi.jpg" class="img-fluid rounded-start team-img" alt="Vibhanshi">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title">Designed & Developed by</h5>
+                  <p class="card-text"></p>
+                  <p class="card-text">Vibhanshi Rajput</p>
+                  <p class="card-text">(Computer Science Engineering Student)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="pics/last_final.jpg" class="img-fluid rounded-start team-img" alt="Ritish">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title">Developed by </h5>
+                  <p class="card-text"></p>
+                  <p class="card-text">Ritish Garg</p>
+                  <p class="card-text">(Computer Science Engineering Student)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <br>
+  <center>
+    <h3 id="reachus">Reach Us</h3>
+  </center>
+  <br>
+  <br>
+  <center>
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d219444.94963685801!2d76.49910375730153!3d30.75135114090017!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ffb140bd63e07%3A0x68591e334d17a988!2sChandigarh%20University!5e0!3m2!1sen!2sin!4v1721049639280!5m2!1sen!2sin"
+      width="1250" height="450" style="border: 1px;" allowfullscreen="" loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </center>
+  <br><br><br><br>
+  <center>
+    <hr>
+    <footer class="new_footer_area bg_color">
+      <div class="new_footer_top">
+        <div class="container">
+          <div class="row" style="margin-left: 60px; margin-right: 60px;">
+            <div class="col-lg-3 col-md-6">
+              <div class="f_widget company_widget wow fadeInLeft" data-wow-delay="0.2s"
+                style="visibility: visible; animation-delay: 0.2s; animation-name: fadeInLeft;">
+                <h3 class="f-title f_600 t_color f_size_18">Get in Touch</h3>
+                <p>Don’t miss any updates of our new website..!</p>
+                <form action="#" class="f_subscribe_two mailchimp" method="post" novalidate="true" _lpchecked="1">
+                  <button class="btn btn_get btn_get_two" type="button">Subscribe</button>
+                  <p class="mchimp-errmessage" style="display: none;"></p>
+                  <p class="mchimp-sucmessage" style="display: none;"></p>
+                </form>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <div class="f_widget about-widget pl_70 wow fadeInLeft" data-wow-delay="0.4s"
+                style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInLeft;">
+                <h3 class="f-title f_600 t_color f_size_18">Download</h3>
+                <ul class="list-unstyled f_list">
+                  <li><a href="#">Company</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <div class="f_widget about-widget pl_70 wow fadeInLeft" data-wow-delay="0.6s"
+                style="visibility: visible; animation-delay: 0.6s; animation-name: fadeInLeft;">
+                <h3 class="f-title f_600 t_color f_size_18">Help</h3>
+                <ul class="list-unstyled f_list">
+                  <li><a href="#">Term &amp; conditions</a></li>
+                  <li><a href="#">Privacy</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <div class="f_widget social-widget pl_70 wow fadeInLeft" data-wow-delay="0.8s"
+                style="visibility: visible; animation-delay: 0.8s; animation-name: fadeInLeft;">
+                <h3 class="f-title f_600 t_color f_size_18">Team <br>Solutions <br> <a
+                    href="https://www.instagram.com/wbdev25"><i class="fa-brands fa-instagram fa-beat"
+                      style="color: black;"></i></a></h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer_bg">
+          <p>INFLUENCER 2019 All rights reserved.</p>
+        </div>
+      </div>
+      </div>
+    </footer>
+  </center>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- Button trigger modal -->
+
+  <!---------------------------------Modal body for signup page------------------------------------------------------>
+
+  <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Signup Here <span id="msgSignup"
+              style="color: green;"></span> <span id="msgWrong" style="color: red;"></span></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Email address</label>
+              <input type="email" id="txtEmail" name="txtEmail" class="form-control" id="exampleInputEmail1"
+                aria-describedby="emailHelp">
+            </div>
+
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label">Password</label>
+              <input type="password" id="pwd" name="pwd" class="form-control" id="exampleInputPassword1">
+            </div>
+            <!-- <div class="mb-3 form-check">
+                          <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                          <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                        </div> -->
+
+            <select class="form-select" aria-label="Default select example" id="combo" name="combo">
+              <option selected>Select your category</option>
+              <option value="Client">Client</option>
+              <option value="Influencer" name="infl" id="infl">Influencer</option>
+
+            </select>
+            <br>
+
+          </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="sgnup">Signup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!---------------------------------Modal body for login page------------------------------------------------------>
+
+
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Login here</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Email address</label>
+              <input type="email" id="txtEmaill" name="txtEmaill" class="form-control" id="exampleInputEmail1"
+                aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label">Password</label>
+              <input type="password" id="txtPwd" name="txtPwd" class="form-control" id="exampleInputPassword1">
+            </div>
+
+            <span id="msgLogin" style="font-size: 18px; font-style: italic;">Status:</span>
+
+          </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="login">Login</button>
+          <br>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

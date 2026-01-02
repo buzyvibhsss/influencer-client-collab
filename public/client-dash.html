@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+  <!-- jquery link -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+  <script>
+    $(document).ready(function () {
+
+      let active = localStorage.getItem("activeuser");
+      //alert(active);
+      $("#dash").html("Welcome: " + active);
+      $("#ml").val(active).prop("readonly", true);
+
+
+      $("#postedevent").click(function () {
+        //alert("obj");
+        let obj = {
+          type: "get",
+          url: "/postbooking-process",
+          data: {
+            mail: $("#mail").val(),
+            eventtitle: $("#eventtitle").val(),
+            inputdate: $("#inputdate").val(),
+            inputtime: $("#inputtime").val(),
+            inputcity: $("#inputcity").val(),
+            inputvenue: $("#inputvenue").val(),
+
+          }
+        }
+        $.ajax(obj).done(function (resp) {
+          //alert(resp);
+          $("#msgPosted").html(resp);
+
+        }).fail(function (err) {
+          alert(err.statusText);
+        })
+      })
+
+
+      $("#set").click(function () {
+
+        alert("obj");
+        let obj = {
+          type: "get",
+          url: "/update-password-process",
+          data: {
+            ml: $("#ml").val(),
+            old: $("#old").val(),
+            newpwd: $("#newpwd").val(),
+            confirm: $("#confirm").val(),
+
+          }
+        }
+        $.ajax(obj).done(function (resp) {
+          //alert(resp);
+          $("#msgSetting").html(resp);
+
+        }).fail(function (err) {
+          alert(err.statusText);
+        })
+      })
+    })
+
+  </script>
+  <style>
+    .form-label {
+      color: blue;
+      font-weight: bold;
+    }
+  </style>
+
+  <script>
+    function doLogout() {
+      localStorage.removeItem("activeuser");
+      location.href = "index.html";
+    }
+  </script>
+
+</head>
+
+<body style="background-color: aliceblue;">
+  <nav style="background-color: white;" class="navbar navbar-expand-lg navbar-light   fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="pics/pikaso_embed.png" height="40" width="40" alt=""> <b
+         style="color: blue">Connexia</b></a>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="me-auto"></div>
+        <div class="d-flex">
+          <button class="btn btn-outline-primary me-2" type="button" id="logout"
+            onclick="doLogout();"><b>Logout</b></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <br>
+  <br>
+  <br>
+        <center>
+          <br>
+            <h1 style="color: blue;">Dashboard</h1>
+        </center>
+    <br>
+    <br>
+    <br>
+
+  <div class="row">
+    <div class="col-md-10  offset-md-1">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/ppffll.avif" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <center><a href="/client-profile"><button type="button" class="btn btn-outline-primary me-2"
+                    id="btnprofile">Profile</button></a></center>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/posttt.jpg" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <center><a href="infl-finder"> <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+                    data-bs-target="#">Find Influencer</button></a>
+              </center>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/eventmanagerrrrrr.avif" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <center><a href="events-manager" class="btn btn-outline-primary me-2">Booked Events</a></center>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/set.avif" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <center> <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+                  data-bs-target="#btnsettings">Settings</button>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+  <!------------------------------------  Post Booking Events  -------------------------------------------------------------------------------------------------------
+
+  <div class="modal" tabindex="-1" id="btnpostbookings">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><b style="color: blue;">Post Booked Events</b><span id="msgPosted"
+              style="color: green;"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Email id</label>
+              <input type="email" class="form-control" id="mail" name="mail" aria-describedby="emailHelp"
+                placeholder="Enter email id">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label">Event Title</label>
+              <input type="text" class="form-control" id="eventtitle" name="eventtitle" placeholder="Name of event">
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label for="inputDate" class="form-label">Date</label>
+                <input type="date" class="form-control" id="inputdate" name="inputdate">
+              </div>
+              <div class="col-md-6">
+                <label for="inputTime" class="form-label">Start Time</label>
+                <input type="time" class="form-control" id="inputtime" name="inputtime">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label for="inputCity" class="form-label">City</label>
+                <select id="inputcity" name="inputcity" class="form-select">
+                  <option selected>Select City</option>
+                  <option value="Andhra Pradesh">Andhra Pradesh</option>
+                  <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                  <option value="Assam">Assam</option>
+                  <option value="Bihar">Bihar</option>
+                  <option value="Chhattisgarh">Chhattisgarh</option>
+                  <option value="Goa">Goa</option>
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Haryana">Haryana</option>
+                  <option value="Himachal Pradesh">Himachal Pradesh</option>
+                  <option value="Jharkhand">Jharkhand</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Kerala">Kerala</option>
+                  <option value="Madhya Pradesh">Madhya Pradesh</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Manipur">Manipur</option>
+                  <option value="Meghalaya">Meghalaya</option>
+                  <option value="Mizoram">Mizoram</option>
+                  <option value="Nagaland">Nagaland</option>
+                  <option value="Odisha">Odisha</option>
+                  <option value="Punjab">Punjab</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                  <option value="Sikkim">Sikkim</option>
+                  <option value="Tamil Nadu">Tamil Nadu</option>
+                  <option value="Telangana">Telangana</option>
+                  <option value="Tripura">Tripura</option>
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  <option value="Uttarakhand">Uttarakhand</option>
+                  <option value="West Bengal">West Bengal</option>
+                  <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                  <option value="Chandigarh">Chandigarh</option>
+                  <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu
+                  </option>
+                  <option value="Lakshadweep">Lakshadweep</option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Puducherry">Puducherry</option>
+                  <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                  <option value="Ladakh">Ladakh</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="inputVenue" class="form-label">Venue</label>
+                <input type="text" class="form-control" id="inputvenue" name="inputvenue">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <center><button type="button" class="btn btn-primary" id="postedevent">Post Event</button></center>
+        </div>
+      </div>
+    </div>
+  </div>
+-->
+
+
+
+
+
+
+
+
+
+
+  <!---------------------------------------   SETTINGS  ---------------------------------------------------------------------------------------->
+
+  <div class="modal" tabindex="-1" id="btnsettings">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><b style="color: blue;">Settings</b><span id="msgSetting"
+              style="color: green;"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="ml" name="ml" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label">Old Password</label>
+              <input type="password" class="form-control" id="old" name="old">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="newpwd" name="newpwd">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="confirm" name="confirm">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="set">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <br><br><br><br>
+    <center>
+      <hr>
+      <footer class="new_footer_area bg_color">
+        <div class="new_footer_top">
+          <div class="container">
+            <div class="row" style="margin-left: 60px; margin-right: 60px;">
+              <div class="col-lg-3 col-md-6">
+                <div class="f_widget company_widget wow fadeInLeft" data-wow-delay="0.2s"
+                  style="visibility: visible; animation-delay: 0.2s; animation-name: fadeInLeft;">
+                  <h3 class="f-title f_600 t_color f_size_18">Get in Touch</h3>
+                  <p>Don’t miss any updates of our new website..!</p>
+                  <form action="#" class="f_subscribe_two mailchimp" method="post" novalidate="true" _lpchecked="1">
+                    <button class="btn btn_get btn_get_two" type="button">Subscribe</button>
+                    <p class="mchimp-errmessage" style="display: none;"></p>
+                    <p class="mchimp-sucmessage" style="display: none;"></p>
+                  </form>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div class="f_widget about-widget pl_70 wow fadeInLeft" data-wow-delay="0.4s"
+                  style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInLeft;">
+                  <h3 class="f-title f_600 t_color f_size_18">Download</h3>
+                  <ul class="list-unstyled f_list">
+                    <li><a href="#">Company</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div class="f_widget about-widget pl_70 wow fadeInLeft" data-wow-delay="0.6s"
+                  style="visibility: visible; animation-delay: 0.6s; animation-name: fadeInLeft;">
+                  <h3 class="f-title f_600 t_color f_size_18">Help</h3>
+                  <ul class="list-unstyled f_list">
+                    <li><a href="#">Term &amp; conditions</a></li>
+                    <li><a href="#">Privacy</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div class="f_widget social-widget pl_70 wow fadeInLeft" data-wow-delay="0.8s"
+                  style="visibility: visible; animation-delay: 0.8s; animation-name: fadeInLeft;">
+                  <h3 class="f-title f_600 t_color f_size_18">Team <br>Solutions <br> <a href="https://www.instagram.com/wbdev25"><i class="fa-brands fa-instagram fa-beat" style="color: black;"></i></a></h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="footer_bg">
+            <p>INFLUENCER  2019 All rights  reserved.</p>
+          </div>
+        </div>
+        </div>
+      </footer>
+    </center>
+
+
+
+</body>
+
+</html>

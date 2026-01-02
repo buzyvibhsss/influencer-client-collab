@@ -1,0 +1,295 @@
+<html>
+
+<head>
+  <title>Document</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <style>
+      .form-label {
+        color: blue;
+        font-weight: bold;
+      }
+  
+      #wait {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-image: url(pics/spinloaderanimation.gif);
+        background-size: contain;
+        top: 50%;
+        left: 50%;
+        display: none;
+      }
+  
+      #bg {
+        width: 100%;
+        height: 100%;
+        background-color: gainsboro;
+        display: none;
+        position: absolute;
+        opacity: .5;
+      }
+  
+      #mm {
+        font-size: larger;
+        font-weight: bold;
+      }
+    </style>
+  <script>
+    $(document).ready(function () {
+
+      let active = localStorage.getItem("activeuser");
+      $("#ee").val(active).prop("readonly", true);
+
+        $("#btnSearchClient").click(function () {
+          let obj = {
+            type: "get",
+            url: "/find-client-details",
+            data: {
+              ee: $("#ee").val()
+            }
+          }
+          $.ajax(obj).done(function (jsonAry,resp) {
+            if (jsonAry.length == 0) {
+              //alert("Invalid ID");
+              $("#mm").html("User not found");
+              return;
+            }
+            //alert(JSON.stringify(jsonAry));
+            $("#fullname").val(jsonAry[0].fullname);//table colu. wala
+            $("#phone").val(jsonAry[0].phone);//table colu. wala
+            $("#org").val(jsonAry[0].org); 
+            $("#statee").val(jsonAry[0].statee); 
+            $("#cty").val(jsonAry[0].cty);
+            $("#gdr").val(jsonAry[0].gdr);
+
+            
+          }).fail(function (err) {
+            alert(err.statusText);
+          })
+  
+        });
+    });
+  </script>
+  <style>
+    .card-img-bottom {
+      color: aliceblue;
+      height: 30rem;
+      background: url(pics/client_page.png);
+      background-size: cover;
+    }
+  </style>
+</head>
+
+<body style="background-color: aliceblue">
+  <div id="bg"></div>
+  <div id="wait"></div>
+  <nav style="background-color: white;" class="navbar navbar-expand-lg navbar-light   fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="pics/pikaso_embed.png" height="40" width="40" alt=""> <b
+         style="color: blue">Connexia</b></a>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="me-auto"></div>
+        <div class="d-flex">
+          <button class="btn btn-outline-primary me-2" type="button" id="logout"
+            onclick="doLogout();"><b>Logout</b></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <br>
+  <br>
+  <br>
+        <center>
+          <br>
+            <h2 style="color: blue;">Profile</h2>
+        </center>
+  <section>
+    <div class="container">
+      <div class="card" style="background-color: aliceblue; margin: auto; border: 0;">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="card-block">
+              <form class="row g-3">
+                <div style="color: purple; margin-top: 35px;">
+                  <h2>Hey <br> Client! <br> Lets <br> Connect_</h2>
+                </div>
+                <div class="col-md-5">
+                  <label for="inputEmail4" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="ee" name="ee" placeholder="Enter email here" required
+                    readonly>
+                </div>
+                <div class="col-md-1 align-self-start">
+                  <br>
+                  <input type="button" value="Search" class="btn btn-primary" id="btnSearchClient">
+                </div>
+                <div class="col-md-3"><br><span id="mm" style="color: red;"></span></div>
+                <div class="col-md-3"></div>
+
+                <div class="col-md-5">
+                  <label for="validationDefault01" class="form-label">Full name</label>
+                  <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter full name"
+                    required>
+                </div>
+                <div class="col-md-5">
+                  <label for="validationDefault02" class="form-label">Contact Number</label>
+                  <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter here" required>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-5">
+                  <label for="validationDefault02" class="form-label">Individual/Organisation Name</label>
+                  <input type="text" class="form-control" id="org" name="org" placeholder="Enter here"
+                    required>
+                </div>
+
+                <div class="col-md-5">
+                  <label for="stateInput" class="form-label">State</label>
+                  <input list="states" id="statee" name="statee" class="form-control" required placeholder="Choose or type a state">
+                  <datalist id="states">
+                    <option value="Andhra Pradesh"></option>
+                    <option value="Arunachal Pradesh"></option>
+                    <option value="Assam"></option>
+                    <option value="Bihar"></option>
+                    <option value="Chhattisgarh"></option>
+                    <option value="Goa"></option>
+                    <option value="Gujarat"></option>
+                    <option value="Haryana"></option>
+                    <option value="Himachal Pradesh"></option>
+                    <option value="Jharkhand"></option>
+                    <option value="Karnataka"></option>
+                    <option value="Kerala"></option>
+                    <option value="Madhya Pradesh"></option>
+                    <option value="Maharashtra"></option>
+                    <option value="Manipur"></option>
+                    <option value="Meghalaya"></option>
+                    <option value="Mizoram"></option>
+                    <option value="Nagaland"></option>
+                    <option value="Odisha"></option>
+                    <option value="Punjab"></option>
+                    <option value="Rajasthan"></option>
+                    <option value="Sikkim"></option>
+                    <option value="Tamil Nadu"></option>
+                    <option value="Telangana"></option>
+                    <option value="Tripura"></option>
+                    <option value="Uttar Pradesh"></option>
+                    <option value="Uttarakhand"></option>
+                    <option value="West Bengal"></option>
+                    <option value="Andaman and Nicobar Islands"></option>
+                    <option value="Chandigarh"></option>
+                    <option value="Dadra and Nagar Haveli and Daman and Diu"></option>
+                    <option value="Lakshadweep"></option>
+                    <option value="Delhi"></option>
+                    <option value="Puducherry"></option>
+                    <option value="Jammu and Kashmir"></option>
+                    <option value="Ladakh"></option>
+                  </datalist>
+                </div>                
+                <div class="col-md-2"></div>
+
+                <div class="col-md-5">
+                  <label for="validationDefault02" class="form-label">City</label>
+                  <input type="text" class="form-control" id="cty" name="cty" placeholder="Enter City" required>
+                </div>
+                <div class="col-md-5">
+                  <label for="inputGender" class="form-label">Gender</label>
+                  <select id="gdr" name="gdr" class="form-select" required>
+                    <option value="" disabled selected>Choose...</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div class="col-md-2"></div>
+
+                <div class="col-md-1">
+                  <br>
+                  <button type="submit" class="btn btn-primary" formaction="/client-process">Save</button>
+                </div>
+                <div class="col-md-1">
+                  <br>
+                  <button type="submit" class="btn btn-primary" formaction="/client-profile-update">Modify</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="col-md-4 d-flex justify-content-center align-items-center" style="overflow: hidden;">
+            <img src="pics/client_page.png" alt="Client Background" style="width: 120%; height: auto; max-width: none;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <br><br><br><br>
+  <center>
+    <hr>
+    <footer class="new_footer_area bg_color">
+      <div class="new_footer_top">
+        <div class="container">
+          <div class="row" style="margin-left: 60px; margin-right: 60px;">
+            <div class="col-lg-3 col-md-6">
+              <div class="f_widget company_widget wow fadeInLeft" data-wow-delay="0.2s"
+                style="visibility: visible; animation-delay: 0.2s; animation-name: fadeInLeft;">
+                <h3 class="f-title f_600 t_color f_size_18">Get in Touch</h3>
+                <p>Don’t miss any updates of our new website..!</p>
+                <form action="#" class="f_subscribe_two mailchimp" method="post" novalidate="true" _lpchecked="1">
+                  <button class="btn btn_get btn_get_two" type="button">Subscribe</button>
+                  <p class="mchimp-errmessage" style="display: none;"></p>
+                  <p class="mchimp-sucmessage" style="display: none;"></p>
+                </form>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <div class="f_widget about-widget pl_70 wow fadeInLeft" data-wow-delay="0.4s"
+                style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInLeft;">
+                <h3 class="f-title f_600 t_color f_size_18">Download</h3>
+                <ul class="list-unstyled f_list">
+                  <li><a href="#">Company</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <div class="f_widget about-widget pl_70 wow fadeInLeft" data-wow-delay="0.6s"
+                style="visibility: visible; animation-delay: 0.6s; animation-name: fadeInLeft;">
+                <h3 class="f-title f_600 t_color f_size_18">Help</h3>
+                <ul class="list-unstyled f_list">
+                  <li><a href="#">Term &amp; conditions</a></li>
+                  <li><a href="#">Privacy</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <div class="f_widget social-widget pl_70 wow fadeInLeft" data-wow-delay="0.8s"
+                style="visibility: visible; animation-delay: 0.8s; animation-name: fadeInLeft;">
+                <h3 class="f-title f_600 t_color f_size_18">Team <br>Solutions <br> <a href="https://www.instagram.com/wbdev25"><i class="fa-brands fa-instagram fa-beat" style="color: black;"></i></a></h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer_bg">
+          <p>INFLUENCER  2019 All rights  reserved.</p>
+        </div>
+      </div>
+      </div>
+    </footer>
+  </center>
+
+
+
+
+
+</body>
+
+</html>
