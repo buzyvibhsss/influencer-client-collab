@@ -20,6 +20,12 @@
   <script>
     $(document).ready(function () {
       
+        if (!localStorage.getItem("activeuser")) {
+    window.location.href = "/";
+    return;
+  }
+
+      
       let active = localStorage.getItem("activeuser");
       //alert(active);
       $("#dash").html("Welcome: " + active);
@@ -54,7 +60,7 @@
 
       $("#set").click(function () {
 
-        alert("obj");
+        /*alert("obj");*/
         let obj = {
           type: "get",
           url: "/update-password-process",
@@ -88,7 +94,7 @@
   function doLogout()
   {
     localStorage.removeItem("activeuser");
-    location.href="index.html";
+    location.href="/";
   }
 </script>
 

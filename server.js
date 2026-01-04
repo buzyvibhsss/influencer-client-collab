@@ -1,3 +1,6 @@
+const bcrypt = require("bcrypt");
+require("dotenv").config();
+
 var express = require("express");
 let app = express();
 let mysql2 = require("mysql2");
@@ -7,40 +10,20 @@ var fileuploader = require("express-fileupload");
 app.use(fileuploader());
 
 
-app.listen(2005, function () {
-    console.log("Your server started ");
+app.listen(process.env.PORT, function () {
+    console.log("Server started on port", process.env.PORT);
 })
 app.use(express.static("public"));
-app.use(express.urlencoded("true"));
+app.use(express.urlencoded({ extended: true }));
 
-
-/*
 let config = {
-    host: "127.0.0.1",
-    user: "root",
-    password: "Davinder@786",
-    database: "project",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     dateStrings: true
-}*/
-let config = {
-    host: "bc402zmtj55lxqg0qxu4-mysql.services.clever-cloud.com",
-    user: "ur970jvqy4jtmrop",
-    password: "LSM2JRcUovTdeSAJ5NVc",
-    database: "bc402zmtj55lxqg0qxu4",
-    dateStrings: true,
-    keepAliveInitialDelay: 120000,
-    enableKeepAlive: true,
 }
-/*
-let config = {
-    host: "bcwznynuyrgm7pgxyry1-mysql.services.clever-cloud.com",
-    user: "u4hgolpcpfong8uo",
-    password: "xtFnIeX2ayZmPfp0AQJV",
-    database: "bcwznynuyrgm7pgxyry1",
-    dateStrings: true,
-    keepAliveInitialDelay: 10000,
-    enableKeepAlive:true,
-} */
+
 var mysql = mysql2.createConnection(config);
 mysql.connect(function (err) {
     if (err == null) {
@@ -76,41 +59,59 @@ app.get("/signup-process", function (req, resp) {
     }
 
 
-    mysql.query("insert into users (email, pwd, utype, status) values (?, ?, ?, 'Active')", [email, pwd, utype], function (err) {
-        if (err) {
-            return resp.send(err.message);
+    bcrypt.hash(pwd, 10, function (err, hash) {
+    if (err) {
+        return resp.send("Error hashing password");
+    }
+
+    mysql.query(
+        "insert into users (email, pwd, utype, status) values (?, ?, ?, 1)",
+        [email, hash, utype],
+        function (err) {
+            if (err) return resp.send(err.message);
+            resp.send("Signed up successfully..!");
         }
-        resp.send("Signed up successfully..!");
-    });
+    );
+});
 });
 
 
 app.get("/login-process", function (req, resp) {
-    //console.log("login-process");
+
     let emaill = req.query.txtEmaill;
     let txtPwd = req.query.txtPwd;
 
-    mysql.query("select * from users where email=? and pwd=?", [emaill, txtPwd], function (err, result) {
-        if (err != null) {
-            resp.send(err.message);
-            return;
-        }
-        if (result.length == 0) {
-            resp.send("Invalid Id or Password");
-            return;
-        }
-        if (result[0].status == 'Active') {
-            resp.send(result[0].utype);
-            return;
-        }
-        else {
-            resp.send("You are Blocked......!!!");
-            return;
-        }
+    mysql.query(
+        "select * from users where email=?",
+        [emaill],
+        function (err, result) {
 
-    })
+            if (err) {
+                resp.send(err.message);
+                return;
+            }
 
-})
+            if (result.length === 0) {
+                resp.send("Invalid Id or Password");
+                return;
+            }
+
+            bcrypt.compare(txtPwd, result[0].pwd, function (err, isMatch) {
+
+                if (!isMatch) {
+                    resp.send("Invalid Id or Password");
+                    return;
+                }
+
+                if (result[0].status == 1) {
+                    resp.send(result[0].utype);
+                } else {
+                    resp.send("You are Blocked......!!!");
+                }
+            });
+        }
+    );
+});
 app.get("/infl-dash", function (req, resp) {
     let path = __dirname + "/public/infl-dash.html";
 
@@ -215,34 +216,43 @@ app.get("/postbooking-process", function (req, resp) {
 app.get("/update-password-process", function (req, resp) {
 
     let ml = req.query.ml;
-    let old = req.query.old;
-    let newpwd = req.query.newpwd;
+    let oldPwd = req.query.old;
+    let newPwd = req.query.newpwd;
     let confirm = req.query.confirm;
 
-    console.log(req.query);
-
-    if (newpwd != confirm) {
-        resp.send("Password do not match");
-        return;
+    if (newPwd !== confirm) {
+        return resp.send("Password do not match");
     }
 
-    mysql.query("select * from users where email=? and pwd=?", [ml, old], function (err, resultJsonAry) {
-        if (err != null) {
-            resp.send(err.message);
-            return;
+    mysql.query(
+        "select pwd from users where email=?",
+        [ml],
+        function (err, result) {
+
+            if (err || result.length === 0) {
+                return resp.send("Invalid user");
+            }
+
+            bcrypt.compare(oldPwd, result[0].pwd, function (err, match) {
+
+                if (!match) {
+                    return resp.send("Incorrect old password");
+                }
+
+                bcrypt.hash(newPwd, 10, function (err, hash) {
+
+                    mysql.query(
+                        "update users set pwd=? where email=?",
+                        [hash, ml],
+                        function () {
+                            resp.send("Password changed successfully");
+                        }
+                    );
+                });
+            });
         }
-        if (resultJsonAry.length == 0) {
-            resp.send("Incorrect Credentails...");
-            return;
-        }
-
-        mysql.query("Update users set pwd=? where email=? ", [newpwd, ml]);
-        resp.send("Changed successfully...!");
-        return;
-    })
-
-})
-
+    );
+});
 
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
