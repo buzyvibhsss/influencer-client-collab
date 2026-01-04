@@ -25,14 +25,34 @@ let config = {
     dateStrings: true
 }
 
-var mysql = mysql2.createConnection(config);
+/*var mysql = mysql2.createConnection(config);
 mysql.connect(function (err) {
     if (err == null) {
         console.log("connected to database successfully");
     }
     else
         console.log(err.message);
-})
+})*/
+
+const mysql = mysql2.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
+
+mysql.getConnection((err, connection) => {
+    if (err) {
+        console.error("Database connection failed:", err.message);
+    } else {
+        console.log("Database pool connected successfully");
+        connection.release();
+    }
+});
+
 
 app.get("/", function (req, resp) {
     let path = __dirname + "/public/index.html";
